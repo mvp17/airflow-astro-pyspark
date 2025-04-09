@@ -17,3 +17,7 @@ RUN export JAVA_HOME
 
 RUN pip install -U pip
 RUN pip install --no-cache-dir minio
+
+# COPY jars.txt /tmp/jars.txt
+# RUN mkdir -p /opt/spark/jars && \
+#     wget -i /tmp/jars.txt -P /opt/spark/jars/
