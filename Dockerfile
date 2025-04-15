@@ -9,15 +9,13 @@ RUN apt update && \
     apt-get clean;
 
 # Set JAVA_HOME
-# For Windows OS
+# For Intel CPU
 # ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64/
-# For MAC OS
+# For ARM CPU
+# ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-arm64/
+
 ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64/
 RUN export JAVA_HOME
 
-RUN pip install -U pip
-RUN pip install --no-cache-dir minio
-
-# COPY jars.txt /tmp/jars.txt
-# RUN mkdir -p /opt/spark/jars && \
-#     wget -i /tmp/jars.txt -P /opt/spark/jars/
+#RUN pip install -U pip
+#RUN pip install --no-cache-dir minio
