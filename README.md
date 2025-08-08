@@ -46,3 +46,8 @@ Contact
 =======
 
 The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+
+
+# AIRFLOW CONNECTIONS
+## my_spark_conn
+conn id = my_spark_conn; conn type = Spark; host = spark://spark-master; port = 7077; encrypted = false; extra encrypted = true;

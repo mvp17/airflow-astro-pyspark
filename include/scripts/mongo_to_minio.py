@@ -16,12 +16,12 @@ configure_minio(spark)
 
 # Read data from MongoDB
 installations_df = spark.read.format("mongodb") \
-    .option("database", "test") \
+    .option("database", "mydb") \
     .option("collection", "installations") \
     .load()
 
 products_df = spark.read.format("mongodb") \
-    .option("database", "test") \
+    .option("database", "mydb") \
     .option("collection", "products") \
     .load()
 
@@ -35,9 +35,10 @@ if not MINIO_CLIENT.bucket_exists(bucket_name):
     print(f"Bucket '{bucket_name}' created.")
 
 json_output_path = f"s3a://{bucket_name}/combined_df/{CURRENT_DATE}.json"
-parquet_output_path = f"s3a://{bucket_name}/combined_df/{CURRENT_DATE}.parquet"
+# parquet_output_path = f"s3a://{bucket_name}/combined_df/{CURRENT_DATE}.parquet"
 
+print("Sending combined DataFrame to MinIO...")
 combined_df.write.mode("overwrite").json(json_output_path)
-combined_df.write.mode("overwrite").parquet(parquet_output_path)
+# combined_df.write.mode("overwrite").parquet(parquet_output_path)
 
 print("Data successfully written to MinIO.")

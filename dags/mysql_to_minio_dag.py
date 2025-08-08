@@ -13,7 +13,7 @@ def mysql_to_minio_dag():
         task_id="submit_mysql_to_minio_job",
         application="/usr/local/airflow/include/scripts/mysql_to_minio.py",
         jars=",".join([
-            "include/jars/mysql-connector-j-8.0.33.jar",
+            "include/jars/mysql-connector-j-8.4.0.jar",
             # jars for MinIO
             "include/jars/hadoop-aws-3.3.4.jar",
             "include/jars/aws-java-sdk-bundle-1.12.262.jar"

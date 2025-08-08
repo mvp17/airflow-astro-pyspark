@@ -13,7 +13,10 @@ spark = SparkSession.builder \
         .getOrCreate()
 
 configure_minio(spark)
-    
+
+print(f"Connecting to MySQL at {MYSQL_URL} with user {MYSQL_USER} and table {MYSQL_TABLE} and password {MYSQL_PASSWORD}")
+
+
 # Read data from MySQL
 mysql_df = spark.read.format("jdbc") \
     .option("url", MYSQL_URL) \
@@ -31,9 +34,9 @@ if not MINIO_CLIENT.bucket_exists(bucket_name):
     print(f"Bucket '{bucket_name}' created.")
 
 json_output_path = f"s3a://{bucket_name}/mysql_data/{CURRENT_DATE}.json"
-parquet_output_path = f"s3a://{bucket_name}/mysql_data/{CURRENT_DATE}.parquet"
+# parquet_output_path = f"s3a://{bucket_name}/mysql_data/{CURRENT_DATE}.parquet"
 
 mysql_df.write.mode("overwrite").json(json_output_path)
-mysql_df.write.mode("overwrite").parquet(parquet_output_path)
+# mysql_df.write.mode("overwrite").parquet(parquet_output_path)
 
 print("MySQL data successfully written to MinIO.")
