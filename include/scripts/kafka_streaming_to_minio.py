@@ -34,16 +34,16 @@ try:
 
     # Read streaming data from Kafka
     log.info(f"Subscribing to Kafka topic '{KAFKA_TOPIC}' at {KAFKA_BROKER}")
-    iot_df = spark.read \
+    iot_stream = spark.readStream \
         .format("kafka") \
         .option("kafka.bootstrap.servers", KAFKA_BROKER) \
         .option("subscribe", KAFKA_TOPIC) \
-        .option("startingOffsets", "earliest") \
-        .option("endingOffsets", "latest") \
+        .option("startingOffsets", "latest") \
+        .option("failOnDataLoss", "false") \
         .load()
 
     # Parse JSON payloads
-    iot_df = iot_df.selectExpr("CAST(value AS STRING)") \
+    iot_df = iot_stream.selectExpr("CAST(value AS STRING)") \
         .select(from_json(col("value"), iot_schema).alias("data")) \
         .select("data.*")
 
@@ -55,18 +55,31 @@ try:
     else:
         log.info(f"Bucket '{bucket_name}' already exists.")
 
-    # output_path_json = f"s3a://{bucket_name}/iot_data/{CURRENT_DATE}/"
+    output_path_json = f"s3a://{bucket_name}/iot_data/{CURRENT_DATE}/"
     # output_path_parquet = f"s3a://{bucket_name}/iot_data/{CURRENT_DATE}.parquet"
 
-    
-    # Write once as JSON array
-    records = iot_df.toJSON().collect()
-    with open("/tmp/iot_data.json", "w") as f:
-        f.write("[\n" + ",\n".join(records) + "\n]")
+    log.info(f"Streaming JSON output to {output_path_json}")
+    query_json = iot_df.writeStream \
+        .format("json") \
+        .option("path", output_path_json) \
+        .option("checkpointLocation", "s3a://iot.bucket/checkpoints/json") \
+        .outputMode("append") \
+        .start()
 
-    MINIO_CLIENT.fput_object("iot.bucket", f"iot_data/{CURRENT_DATE}.json", "/tmp/iot_data.json")
+    # log.info(f"Streaming Parquet output to {output_path_parquet}")
+    # query_parquet = iot_df.writeStream \
+    #     .format("parquet") \
+    #     .option("path", output_path_parquet) \
+    #     .option("checkpointLocation", "s3a://iot.bucket/checkpoints/parquet") \
+    #     .trigger(processingTime="30 seconds") \
+    #     .outputMode("append") \
+    #     .start()
 
-    log.info("Kafka job completed successfully.")
+    # Keep running for a fixed time window (e.g. 20s for testing)
+    query_json.awaitTermination()
+    # query_parquet.awaitTermination(20)
+
+    log.info("Kafka streaming job completed successfully.")
 
 except Exception as e:
     log.error(f"Kafka ETL job failed: {e}", exc_info=True)
