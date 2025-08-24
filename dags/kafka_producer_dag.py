@@ -1,6 +1,5 @@
 from airflow.decorators import dag, task
 from datetime import datetime
-from airflow.operators.python import PythonOperator
 import subprocess
 
 @dag(
