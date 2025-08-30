@@ -22,7 +22,7 @@ services:
       - airflow
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.2.15
     container_name: kafka
     depends_on:
       - zookeeper
@@ -42,7 +42,7 @@ services:
       - airflow
 
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
     container_name: minio
     command: server /data --console-address ":9001"
     environment:
@@ -60,7 +60,7 @@ services:
       - airflow
 
   spark-master:
-    image: bitnami/spark:latest
+    image: bitnami/spark:3.5.1
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -80,7 +80,7 @@ services:
       - airflow
 
   spark-worker:
-    image: bitnami/spark:latest
+    image: bitnami/spark:3.5.1
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077

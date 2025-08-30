@@ -1,4 +1,5 @@
 # from pyspark import SparkContext
+import pyspark
 from pyspark.sql import SparkSession
 from airflow.models import Variable
 from config import MINIO_CLIENT, configure_minio, CURRENT_DATE
@@ -15,13 +16,16 @@ if not MONGO_URI:
 
 spark = None
 try:
+    print(">>> PySpark version:", pyspark.__version__)
     # Start Spark session
     spark = SparkSession.builder \
         .appName("MongoToMinIO") \
         .config("spark.mongodb.read.connection.uri", MONGO_URI) \
         .getOrCreate()
-
+        
+    print(">>> Spark runtime version:", spark.version)
     configure_minio(spark)
+    
     log.info("Spark session created and MinIO configured.")
 
     # Read data from MongoDB

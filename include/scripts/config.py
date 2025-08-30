@@ -34,3 +34,13 @@ def configure_minio(spark):
     hadoop_conf.set("fs.s3a.fast.upload.buffer", "bytebuffer")
     hadoop_conf.set("fs.s3a.multipart.size", "104857600")  # 100 MB
     hadoop_conf.set("fs.s3a.multipart.threshold", "104857600")  # 100 MB
+    
+    iterator = hadoop_conf.iterator()
+    print("\n===== Active fs.s3a.* configs =====")
+    while iterator.hasNext():
+        entry = iterator.next()
+        key = entry.getKey()
+        value = entry.getValue()
+        if key.startswith("fs.s3a"):
+            print(f"{key} = {value}")
+    print("==================================\n")
